@@ -1,0 +1,139 @@
+#labels Featured,Phase-Requirements,Phase-Design
+#Getting started
+
+= Introduction =
+
+The Application class example.
+
+
+= Details =
+{{{
+package utils;
+
+import java.io.IOException;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+
+import java.sql.ResultSet;
+
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.common.SolrInputDocument;
+
+public class App {
+
+    public static String firstDB;
+    static Connection conn;
+    public static Map<String, Database> dbs = new HashMap<String, Database>();
+    public static Properties prop = new Properties();
+    public static SolrServer server;
+    
+
+    public App() {
+        super();
+
+    }
+
+    public static void setProp(Properties sprop) {
+        prop = sprop;
+    }
+
+    public static Properties getProp() {
+        return prop;
+    }
+
+    public static void setConn(Connection conn) {
+        App.conn = conn;
+    }
+
+    public static Connection getConn() {
+
+        if (conn == null) {
+            prop.loadDBConnections();
+            System.out.println("firstDB = " + firstDB);
+            conn = dbs.get(firstDB).getDBConnection();
+        }
+        return conn;
+    }
+
+
+    public static void setFirstDB(String firstDB) {
+        App.firstDB = firstDB;
+    }
+
+    public static String getFirstDB() {
+        return firstDB;
+    }
+
+    public static void setDbs(Map<String, Database> dbs) {
+        App.dbs = dbs;
+    }
+
+    public static Map<String, Database> getDbs() {
+        return dbs;
+    }
+
+    public static ResultSet select(CharSequence cs) {
+        Statement stmt;
+        ResultSet rs = null;
+        try {
+            stmt = getConn().createStatement();
+            rs = stmt.executeQuery(cs.toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return rs;
+    }
+
+  public static CallableStatement prepareCall(CharSequence cs) {
+      CallableStatement stmt = null;
+      try {
+          stmt = getConn().prepareCall(cs.toString());
+      } catch (SQLException e) {
+          e.printStackTrace();
+      }
+      return stmt;
+  }
+
+    public static void solrAdd(SolrInputDocument i) {
+
+        try {
+          getServer().add( i );
+          getServer().commit();
+
+        } catch (SolrServerException e) {
+          e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+      
+    }
+
+
+    public static void setServer(SolrServer server) {
+        App.server = server;
+    }
+
+    public static SolrServer getServer() {
+      if (server == null) {
+          String solr = prop.getProp().getProperty("solr");
+          System.out.println("Solr server = " + solr);
+        HttpClient httpclient = new DefaultHttpClient();
+          server = new HttpSolrServer(solr,httpclient);
+      }
+
+      return server;
+    }
+}
+}}}
