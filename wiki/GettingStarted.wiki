@@ -8,92 +8,11 @@ The Application class example.
 
 = Details =
 {{{
-package com.google.code.acacia_app;
 
-import java.io.IOException;
-
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-public class App {
-    public App() {
-        super();
+    @Test
+    public void testGetInstance() {
+        Application app = ApplicationFactory.getInstance();
+        app.select("select * from dual");
     }
-
-
-  public String firstDB;
-  Connection conn;
-  public Map<String, Database> dbs = new HashMap<String, Database>();
-  public Properties prop = new Properties();
-
-  public void setProp(Properties sprop) {
-      this.prop = sprop;
-  }
-
-  public Properties getProp() {
-      return prop;
-  }
-
-  public void setConn(Connection conn) {
-      this.conn = conn;
-  }
-
-  public Connection getConn() {
-
-      if (conn == null) {
-          prop.loadDBConnections();
-          System.out.println("firstDB = " + firstDB);
-          conn = dbs.get(firstDB).getDBConnection();
-      }
-      return conn;
-  }
-
-
-  public void setFirstDB(String firstDB) {
-      this.firstDB = firstDB;
-  }
-
-  public String getFirstDB() {
-      return firstDB;
-  }
-
-  public void setDbs(Map<String, Database> dbs) {
-      this.dbs = dbs;
-  }
-
-  public Map<String, Database> getDbs() {
-      return dbs;
-  }
-
-  public ResultSet select(CharSequence cs) {
-      Statement stmt;
-      ResultSet rs = null;
-      try {
-          stmt = getConn().createStatement();
-          rs = stmt.executeQuery(cs.toString());
-      } catch (SQLException e) {
-          e.printStackTrace();
-      }
-      return rs;
-  }
-
-  public CallableStatement prepareCall(CharSequence cs) {
-    CallableStatement stmt = null;
-    try {
-        stmt = getConn().prepareCall(cs.toString());
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return stmt;
-  }
-
-}
 
 }}}
