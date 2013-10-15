@@ -31,14 +31,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * Application class pointing to its properties file config.properties
+ */
 public class Application {
     public Application() {
         super();
     }
 
 
-  public String firstDB;
-  Connection conn;
+  public String currentDB;
+  public Connection conn;
   public Map<String, OracleDatabase> dbs = new HashMap<String, OracleDatabase>();
   public PropertiesManager propsMg;
 
@@ -57,20 +60,20 @@ public class Application {
   public Connection getConnection() {
 
       if (conn == null) {
-          System.out.println("firstDB = " + firstDB);
-          conn = dbs.get(firstDB).getDBConnection();
+          System.out.println("currentDB = " + currentDB);
+          conn = dbs.get(currentDB).getDBConnection();
       }
       return conn;
   }
 
 
-  public void setFirstDB(String firstDB) {
-      this.firstDB = firstDB;
+  public void setCurrentDB(String currentDB) {
+      this.currentDB = currentDB;
       conn = null;
   }
 
-  public String getFirstDB() {
-      return firstDB;
+  public String getCurrentDB() {
+      return currentDB;
   }
 
   public void setDbs(Map<String,OracleDatabase> dbs) {
