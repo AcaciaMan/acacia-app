@@ -25,13 +25,23 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * ApplicationFactory class containing Map of application configurations
+ */
 public class ApplicationFactory {
     
     public static final Map<String,Application> apps = new HashMap<String,Application>();
     
     public ApplicationFactory() {
         super();
+    }
+    
+    private static Application initApplication() {
+      Application app = new Application();
+      app.propsMg = new PropertiesManager();
+      app.propsMg.load();
+      app.propsMg.loadDBConnections(app);
+      return app;
     }
     
     public static Application getInstance(){
@@ -46,7 +56,8 @@ public class ApplicationFactory {
       }
       
       if(!apps.containsKey(url.getPath())) {
-          Application app = new Application();
+          // initialize application
+          Application app = initApplication();
           apps.put(url.getPath(), app);
       }
             

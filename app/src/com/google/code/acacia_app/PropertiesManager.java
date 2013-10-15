@@ -30,8 +30,10 @@ import java.util.Properties;
 public class PropertiesManager {
     
   public static final String PROP_FILE = "config.properties";
+  public static final String DB = "db"; 
 
   public Properties props;
+  public String firstDB;
 
   public PropertiesManager() {
       super();
@@ -61,14 +63,14 @@ public class PropertiesManager {
 
           String name = (String)e.nextElement();
 
-          if (!name.startsWith("db."))
+          if (!name.startsWith(DB+ "."))
               continue;
 
 
           String[] split = name.split("\\.");
-          if (split[0].equals("db")) {
-              if (app.getFirstDB() == null)
-                  app.setFirstDB(split[1]);
+          if (DB.equals(split[0])) {
+              if (firstDB == null)
+                  firstDB = split[1];
               d = app.getDbs().get(split[1]);
               if (d == null) {
                   d = new OracleDatabase();
@@ -83,7 +85,9 @@ public class PropertiesManager {
 
       if (props.getProperty("CurrentDB") != null &&
           props.getProperty("CurrentDB").length() > 0) {
-          app.setFirstDB(props.getProperty("CurrentDB"));
+          app.setCurrentDB(props.getProperty("CurrentDB"));
+      } else {
+        app.setCurrentDB(firstDB);
       }
 
   }
@@ -92,9 +96,9 @@ public class PropertiesManager {
     props = new Properties();
       try {
           //set the properties value
-          props.setProperty("dbdatabase", "localhost");
-          props.setProperty("dbuser", "user");
-          props.setProperty("dbpassword", "password");
+          props.setProperty(DB+".XE.database", "jdbc\\:oracle\\:thin\\:@localhost\\:1521\\:XE");
+          props.setProperty(DB+".XE.user", "user");
+          props.setProperty(DB+".XE.password", "password");
 
           //save properties to project root folder
           props.store(new FileOutputStream(PROP_FILE), null);
