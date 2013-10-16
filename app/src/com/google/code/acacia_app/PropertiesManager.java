@@ -20,9 +20,13 @@
 
 package com.google.code.acacia_app;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import java.util.Enumeration;
 import java.util.Properties;
@@ -34,6 +38,7 @@ public class PropertiesManager {
 
   public Properties props;
   public String firstDB;
+  public URL url;
 
   public PropertiesManager() {
       super();
@@ -107,5 +112,31 @@ public class PropertiesManager {
           ex.printStackTrace();
       }
   }
+  
+  public URL getUrl(){
+      if(url == null) {
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    url = classLoader.getResource(PROP_FILE);
+      }
+    return url;
+  }
+
+
+  /*
+   * Get application properties file last modified date
+   * If properties file changes, then on next getInstance call application is reinitialized
+   */
+  public long getPropertiesLastModified() {
+
+    File f;
+    try {
+      f = new File(getUrl().toURI());
+    } catch(URISyntaxException e) {
+      f = new File(getUrl().getPath());
+    }        
+    
+    return f.lastModified();
+  }
+
     
 }
