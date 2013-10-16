@@ -20,6 +20,11 @@
 
 package com.google.code.acacia_app;
 
+import com.sun.org.apache.xerces.internal.impl.PropertyManager;
+
+import java.io.File;
+
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import java.util.HashMap;
@@ -41,28 +46,40 @@ public class ApplicationFactory {
       app.propsMg = new PropertiesManager();
       app.propsMg.load();
       app.propsMg.loadDBConnections(app);
+      app.propsLastModified = app.propsMg.getPropertiesLastModified();
       return app;
     }
     
     public static Application getInstance(){
-      ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-      URL url = classLoader.getResource(PropertiesManager.PROP_FILE);
+      Application app = null;
+      PropertiesManager pm = new PropertiesManager();
+      URL url = pm.getUrl();
       
       if(url==null) {
         System.out.println("New resource file created!");
-        PropertiesManager pm = new PropertiesManager();
         pm.store();
-        url = classLoader.getResource(PropertiesManager.PROP_FILE);
+        url = pm.getUrl();
       }
+      
+      if(apps.containsKey(url.getPath())) {
+        app = apps.get(url.getPath());
+
+        // check if properties file is changed
+        if(app.propsLastModified<pm.getPropertiesLastModified()) {
+          apps.remove(url.getPath());          
+        }
+      } 
       
       if(!apps.containsKey(url.getPath())) {
           // initialize application
-          Application app = initApplication();
+          app = initApplication();
           apps.put(url.getPath(), app);
       }
+      
             
-      return apps.get(url.getPath());
+      return app;
       
     }
+    
     
 }

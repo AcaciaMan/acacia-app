@@ -44,6 +44,7 @@ public class Application {
   public Connection conn;
   public Map<String, OracleDatabase> dbs = new HashMap<String, OracleDatabase>();
   public PropertiesManager propsMg;
+  public long propsLastModified;
 
   public void setProperties(Properties props) {
       this.propsMg.props = props;
