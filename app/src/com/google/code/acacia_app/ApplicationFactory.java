@@ -41,8 +41,13 @@ public class ApplicationFactory {
         super();
     }
     
-    private static Application initApplication() {
-      Application app = new Application();
+    // This should be overriden in Factory subclasses
+    protected Application getNewApplication() {
+      return new Application();
+    }
+    
+    protected Application initApplication() {
+      Application app = getNewApplication();
       app.propsMg = new PropertiesManager();
       app.propsMg.load();
       app.propsMg.loadDBConnections(app);
@@ -50,7 +55,7 @@ public class ApplicationFactory {
       return app;
     }
     
-    public static Application getInstance(){
+    public Application getInstance(){
       Application app = null;
       PropertiesManager pm = new PropertiesManager();
       URL url = pm.getUrl();
