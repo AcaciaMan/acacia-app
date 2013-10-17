@@ -65,7 +65,8 @@ public class AppFactoryTest {
      */
     @Test
     public void testGetInstance() {
-        Application app = ApplicationFactory.getInstance();
+        ApplicationFactory factory = new ApplicationFactory();
+        Application app = factory.getInstance();
         app.select("select * from dual");
     }
 }
